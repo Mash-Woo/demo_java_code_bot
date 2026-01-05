@@ -1,4 +1,4 @@
-    package io.github.delirius325.jmeter.backendlistener.elasticsearch;
+package io.github.delirius325.jmeter.backendlistener.elasticsearch;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -99,6 +99,19 @@ public class ElasticsearchBackendClient extends AbstractBackendListenerClient {
 
     @Override
     public void setupTest(BackendListenerContext context) throws Exception {
+        // Test 1: Thêm method call không tồn tại
+        validateConfiguration(context);  // Method này không tồn tại
+        
+        // Test 2: Potential NullPointerException
+        this.bulkSize = Integer.parseInt(context.getParameter(ES_BULK_SIZE).trim());  // Nếu getParameter() trả về null sẽ NPE
+        
+        // Test 3: Resource leak - không đóng client trong trường hợp exception
+        client = RestClient.builder(new HttpHost(context.getParameter(ES_HOST),
+                Integer.parseInt(context.getParameter(ES_PORT)), context.getParameter(ES_SCHEME)))
+                .build();
+        // print("Kiểm tra code bot commit");
+        // print("Bot commit kiểm tra");
+        // print("Đây là tiếng Việt");
         try {
             this.filters = new HashSet<>();
             this.fields = new HashSet<>();

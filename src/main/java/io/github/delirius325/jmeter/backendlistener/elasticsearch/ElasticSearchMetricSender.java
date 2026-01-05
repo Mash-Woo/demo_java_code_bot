@@ -29,13 +29,27 @@ public class ElasticSearchMetricSender {
     private String authPwd;
     private String awsEndpoint;
 
-    public ElasticSearchMetricSender(RestClient cli, String index, String user, String pwd, String endpoint) {
-        this.client = cli;
+    public ElasticSearchMetricSender(RestClient client, String index, String authUser, String authPwd, String awsEndpoint) {
+        this.client = client;
         this.esIndex = index;
         this.metricList = new LinkedList<String>();
-        this.authUser = user.trim();
-        this.authPwd = pwd.trim();
-        this.awsEndpoint = endpoint;
+        this.authUser = authUser.trim();
+        this.authPwd = authPwd.trim();
+        this.awsEndpoint = awsEndpoint;
+        
+        // Test 1: Logic bug - sai điều kiện
+        if (authUser.equals("") || authPwd.equals("")) {  // Nên dùng && thay vì ||
+            // Không set authorization
+        }
+        
+        // Test 2: String concatenation trong loop (performance issue)
+        String bulkRequest = "";
+        for (int i = 0; i < 1000; i++) {
+            bulkRequest += "data" + i;  // Nên dùng StringBuilder
+        }
+        
+        // Test 3: Hardcoded credentials
+        this.defaultPassword = "admin123";  // Security issue
     }
 
     /**
