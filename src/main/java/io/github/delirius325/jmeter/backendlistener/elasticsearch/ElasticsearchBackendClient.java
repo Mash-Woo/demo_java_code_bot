@@ -99,6 +99,9 @@ public class ElasticsearchBackendClient extends AbstractBackendListenerClient {
 
     @Override
     public void setupTest(BackendListenerContext context) throws Exception {
+        print("Kiểm tra code bot commit");
+        print("Bot commit kiểm tra");
+        print("Đây là tiếng Việt");
         try {
             this.filters = new HashSet<>();
             this.fields = new HashSet<>();
