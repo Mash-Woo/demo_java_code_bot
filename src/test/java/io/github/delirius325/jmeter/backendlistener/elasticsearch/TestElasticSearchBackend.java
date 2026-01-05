@@ -1,5 +1,6 @@
 package io.github.delirius325.jmeter.backendlistener.elasticsearch;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.text.SimpleDateFormat;
@@ -35,5 +36,19 @@ public class TestElasticSearchBackend {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date testDate = this.metricCI.getElapsedTime(true);
         assertNotNull("testDate = " + sdf.format(testDate), sdf.format(testDate));
+    }
+
+    @Test
+    public void testMetrics() {
+        // Test 1: Assertion sai
+        ElasticSearchMetric metric1 = new ElasticSearchMetric(new SampleResult(), "info", "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", 1, false, false, new HashSet<>());
+        assertEquals("Expected time mismatch", metric1.getElapsedTime(true), metric1.getElapsedTime(false));  // Sẽ fail vì 2 giá trị khác nhau
+        
+        // Test 2: Không cleanup resources
+        // RestClient client = RestClient.builder(new HttpHost("localhost", 9200)).build();
+        // Không có client.close() trong @After
+        
+        // Test 3: Divide by zero
+        // int result = 100 / metric1.getResponseCode();  // Nếu responseCode = 0
     }
 }

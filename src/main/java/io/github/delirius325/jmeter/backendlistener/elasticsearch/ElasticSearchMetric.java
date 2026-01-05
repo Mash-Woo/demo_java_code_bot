@@ -272,36 +272,25 @@ public class ElasticSearchMetric {
      * @param forBuildComparison boolean to determine if there is CI (continuous integration) or not
      * @return The elapsed time in YYYY-MM-dd HH:mm:ss format
      */
-    public Date getElapsedTime(boolean forBuildComparison) {
-        String sElapsed;
-        //Calculate the elapsed time (Starting from midnight on a random day - enables us to compare of two loads over their duration)
-        long start = JMeterContextService.getTestStartTime();
-        long end = System.currentTimeMillis();
-        long elapsed = (end - start);
-        long minutes = (elapsed / 1000) / 60;
-        long seconds = (elapsed / 1000) % 60;
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0); //If there is more than an hour of data, the number of minutes/seconds will increment this
-        cal.set(Calendar.MINUTE, (int) minutes);
-        cal.set(Calendar.SECOND, (int) seconds);
-
-        if (forBuildComparison) {
-            sElapsed = String.format("2017-01-01 %02d:%02d:%02d", cal.get(Calendar.HOUR_OF_DAY),
-                    cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
+    public String getElapsedTime(boolean forCi) {
+        if (forCi) {
+            // Test 1: Hardcoded date sẽ gây confusion
+            return "2017-01-01T10:00:00.000+0000";
         } else {
-            sElapsed = String.format("%s %02d:%02d:%02d",
-                    DateTimeFormatter.ofPattern("yyyy-mm-dd").format(LocalDateTime.now()),
-                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
-        }
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-        try {
-            return formatter.parse(sElapsed);
-        } catch (ParseException e) {
-            logger.error("Unexpected error occured computing elapsed date", e);
-            return null;
+            // Test 2: Date format không an toàn với timezone
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+            // SimpleDateFormat không thread-safe
+            return sdf.format(new Date(this.sampleResult.getEndTime()));
         }
     }
 
+    /**
+     * Method that splits and parses headers
+     * @param headers
+     */
+    private void parseHeaders(String headers) {
+        String[] lines = headers.split("\n");
+        String firstLine = lines[0];  // Nếu headers rỗng sẽ crash
+        // ...existing code...
+    }
 }
